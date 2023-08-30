@@ -123,7 +123,7 @@ export default function Dashboard() {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Maciej Goryczko testing React App
+              Maciej Goryczko Test App
             </Typography>
             <IconButton color="inherit">
               <Badge badgeContent={4} color="secondary">
