@@ -1,12 +1,12 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Dashboard from './dashboard/Dashboard';
+import DeptCalulator from './deptCalculator/DeptCalculator';
 
 function App() {
   return (
     <div className="App">
-      <Dashboard />
+      <DeptCalulator />
     </div>
   );
 }
