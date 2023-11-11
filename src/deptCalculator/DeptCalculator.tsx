@@ -1,11 +1,20 @@
-import { Box, Button, Container, Divider, List, ListItem, ListItemText, TextField } from '@mui/material';
+import { Button, Container, Divider, List, ListItem, ListItemText, MenuItem, Select, TextField } from '@mui/material';
 import * as React from 'react';
 
 export default function DeptCalulator() {
+    type Amount = {
+        peopleId: number[],
+        nameOfAmount: string,
+        amount: number
+    }
+
     const [name, setName] = React.useState("");
     const [personEditingValue, setPersonEditingValue] = React.useState("");
     const [editModeIndex, setEditMode] = React.useState<number | null>();
     const [people, setPeople] = React.useState<string[]>([]);
+    const [amounts, setAmounts] = React.useState<Amount[]>([]);
+    const [personState, setPersonState] = React.useState(true);
+    const [amountState, setAmountState] = React.useState(!personState);
 
     const handleAddPerson = (e: any) => {
         e.preventDefault();
@@ -47,64 +56,157 @@ export default function DeptCalulator() {
 
     return (
         <>
-            <h1>Add meeting members</h1>
-            <div style={mystyle}>
-                <form onSubmit={(e) => handleAddPerson(e)}>
-                    <TextField
-                        size="small"
-                        id="outlined-basic"
-                        label="Name"
-                        variant="outlined"
-                        value={name}
-                        onChange={(e) => { setName(e.target.value) }} />
-                    <Button
-                        sx={{ marginLeft: '10px' }}
-                        variant="contained"
-                        type='submit'>Add member</Button>
-                </form>
-            </div>
 
-            <Container maxWidth="sm">
-                <List aria-label="mailbox folders">
-                    {people.map((person, i) => {
-                        return <ListItem divider>
-                            {editModeIndex === i ? <form onSubmit={(e) => handleEditPerson(e, i)}>
-                                <TextField
-                                    size="small"
-                                    id="outlined-basic"
-                                    label="Name"
-                                    variant="outlined"
-                                    value={personEditingValue}
-                                    onChange={(e) => { setPersonEditingValue(e.target.value) }}
-                                />
-                                <Button
-                                    sx={{ marginLeft: '10px' }}
-                                    variant="contained"
-                                    type='submit'>Confirm edit</Button>
-                                <Button
-                                    sx={{ marginLeft: '10px', backgroundColor: '#d11f1f' }}
-                                    variant="contained"
-                                    type='button'
-                                    onClick={() => handleCancelEdit()}>Cancel edit</Button>
-                            </form> :
-                                <>
-                                    <ListItemText primary={person} />
+
+            {personState ? <>
+                <h1>Add meeting members</h1>
+                <div style={mystyle}>
+                    <form onSubmit={(e) => handleAddPerson(e)}>
+                        <TextField
+                            size="small"
+                            id="outlined-basic"
+                            label="Name"
+                            variant="outlined"
+                            value={name}
+                            onChange={(e) => { setName(e.target.value) }} />
+                        <Button
+                            sx={{ marginLeft: '10px' }}
+                            variant="contained"
+                            type='submit'>Add member</Button>
+                    </form>
+                </div>
+                <Container maxWidth="sm">
+                    <List aria-label="mailbox folders">
+                        {people.map((person, i) => {
+                            return <ListItem divider>
+                                {editModeIndex === i ? <form onSubmit={(e) => handleEditPerson(e, i)}>
+                                    <TextField
+                                        size="small"
+                                        id="outlined-basic"
+                                        label="Name"
+                                        variant="outlined"
+                                        value={personEditingValue}
+                                        onChange={(e) => { setPersonEditingValue(e.target.value) }}
+                                    />
                                     <Button
-                                        sx={{ marginLeft: '10px', backgroundColor: 'grey' }}
+                                        sx={{ marginLeft: '10px' }}
                                         variant="contained"
-                                        onClick={() => switchEditMode(i, person)}>Edit</Button>
+                                        type='submit'>Confirm edit</Button>
                                     <Button
                                         sx={{ marginLeft: '10px', backgroundColor: '#d11f1f' }}
                                         variant="contained"
                                         type='button'
-                                        onClick={() => handleDeletePerson(i)}>Delete</Button>
-                                </>
-                            }
-                            <Divider light />
-                        </ListItem>;
-                    })}
-                </List>
-            </Container>
+                                        onClick={() => handleCancelEdit()}>Cancel edit</Button>
+                                </form> :
+                                    <>
+                                        <ListItemText primary={person} />
+                                        <Button
+                                            sx={{ marginLeft: '10px', backgroundColor: 'grey' }}
+                                            variant="contained"
+                                            onClick={() => switchEditMode(i, person)}>Edit</Button>
+                                        <Button
+                                            sx={{ marginLeft: '10px', backgroundColor: '#d11f1f' }}
+                                            variant="contained"
+                                            type='button'
+                                            onClick={() => handleDeletePerson(i)}>Delete</Button>
+                                    </>
+                                }
+                                <Divider light />
+                            </ListItem>;
+                        })}
+                    </List>
+                </Container>
+                <Button
+                    sx={{ marginLeft: '10px' }}
+                    variant="contained"
+                    type='button'
+                    onClick={() => setPersonState(false)}>Finish adding members</Button>
+            </>
+                :
+                <>
+                    <Button
+                        sx={{ marginTop: '5px', marginLeft: '10px' }}
+                        variant="contained"
+                        type='button'
+                        onClick={() => setPersonState(true)}>Edit members</Button>
+                    <h1>Add amounts and recepients</h1>
+                    <div style={mystyle}>
+                        <form onSubmit={(e) => handleAddPerson(e)}>
+                            <TextField
+                                size="small"
+                                id="outlined-basic"
+                                label="Name of activity"
+                                variant="outlined"
+                                value={name}
+                                onChange={(e) => { setName(e.target.value) }} />
+                            <Select
+                                size="small"
+                                id="outlined-basic"
+                                label="Name of activity"
+                                variant="outlined"
+                                value={people}
+                                multiple>
+                                {people.map((person) => {
+                                    return <><MenuItem value={person}>{person}</MenuItem></>
+                                }
+                                )}
+                            </Select>
+                            <TextField
+                                size="small"
+                                id="outlined-basic"
+                                label="Name of activity"
+                                variant="outlined"
+                                value={name}
+                                onChange={(e) => { setName(e.target.value) }} />
+                            <Button
+                                sx={{ marginLeft: '10px' }}
+                                variant="contained"
+                                type='submit'>Add member</Button>
+                        </form>
+                    </div>
+                    <Container maxWidth="sm">
+                        <List aria-label="mailbox folders">
+                            {amounts.map((amount, i) => {
+                                return <ListItem divider>
+                                    {editModeIndex === i ? <form onSubmit={(e) => handleEditPerson(e, i)}>
+                                        <TextField
+                                            size="small"
+                                            id="outlined-basic"
+                                            label="Name"
+                                            variant="outlined"
+                                            value={personEditingValue}
+                                            onChange={(e) => { setPersonEditingValue(e.target.value) }}
+                                        />
+                                        <Button
+                                            sx={{ marginLeft: '10px' }}
+                                            variant="contained"
+                                            type='submit'>Confirm edit</Button>
+                                        <Button
+                                            sx={{ marginLeft: '10px', backgroundColor: '#d11f1f' }}
+                                            variant="contained"
+                                            type='button'
+                                            onClick={() => handleCancelEdit()}>Cancel edit</Button>
+                                    </form> :
+                                        <>
+                                            <ListItemText primary={amount.nameOfAmount} />
+                                            <Button
+                                                sx={{ marginLeft: '10px', backgroundColor: 'grey' }}
+                                                variant="contained"
+                                                onClick={() => switchEditMode(i, amount.nameOfAmount)}>Edit</Button>
+                                            <Button
+                                                sx={{ marginLeft: '10px', backgroundColor: '#d11f1f' }}
+                                                variant="contained"
+                                                type='button'
+                                                onClick={() => handleDeletePerson(i)}>Delete</Button>
+                                        </>
+                                    }
+                                    <Divider light />
+                                </ListItem>;
+                            })}
+                        </List>
+                    </Container>
+                </>
+            }
         </>
     );
 }
