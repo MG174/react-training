@@ -1,18 +1,42 @@
-import { Button, Container, Divider, List, ListItem, ListItemText, MenuItem, Select, TextField } from '@mui/material';
+import { Button, Container, Divider, FormControl, InputLabel, List, ListItem, ListItemText, MenuItem, OutlinedInput, Select, TextField, Theme, useTheme } from '@mui/material';
 import * as React from 'react';
 
 export default function DeptCalulator() {
+    const ITEM_HEIGHT = 48;
+    const ITEM_PADDING_TOP = 8;
+    const MenuProps = {
+        PaperProps: {
+            style: {
+                maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+                width: 250,
+            },
+        },
+    };
+
+
+    const theme = useTheme();
+
     type Amount = {
-        peopleId: number[],
+        peopleRecepients: string[],
+        personPaid: string,
         nameOfAmount: string,
         amount: number
     }
 
+    //people
     const [name, setName] = React.useState("");
     const [personEditingValue, setPersonEditingValue] = React.useState("");
     const [editModeIndex, setEditMode] = React.useState<number | null>();
     const [people, setPeople] = React.useState<string[]>([]);
+
+    //amounts
+    const [nameOfActivity, setNameOfActivity] = React.useState("");
+    const [amountOfActivity, setAmountOfActivity] = React.useState("");
+    const [peopleForAmount, setPeopleForAmount] = React.useState<string[]>([]);
+    const [personPaid, setPersonPaid] = React.useState("");
     const [amounts, setAmounts] = React.useState<Amount[]>([]);
+
+    //states
     const [personState, setPersonState] = React.useState(true);
     const [amountState, setAmountState] = React.useState(!personState);
 
@@ -54,10 +78,37 @@ export default function DeptCalulator() {
         alignItems: "center",
     };
 
+    const handleAddPeopleForAmount = (event: any) => {
+        const {
+            target: { value },
+        } = event;
+        setPeopleForAmount(
+            typeof value === 'string' ? value.split(',') : value,
+        );
+    };
+
+    const handleAddPersonPaid = (event: any) => {
+        setPersonPaid(event.target.value as string);
+    };
+
+    const handleAddRecords = (e: any) => {
+        const amount = { 
+            amount: amountOfActivity, 
+            nameOfAmount: nameOfActivity, 
+            personPaid: personPaid, 
+            peopleRecepients: peopleForAmount} as unknown as Amount;
+
+        e.preventDefault();
+        if (!amount) return;
+        amounts.push(amount);
+        setAmounts(amounts);
+
+        setNameOfActivity("");
+        setAmountOfActivity("");
+    };
+
     return (
         <>
-
-
             {personState ? <>
                 <h1>Add meeting members</h1>
                 <div style={mystyle}>
@@ -131,37 +182,65 @@ export default function DeptCalulator() {
                         onClick={() => setPersonState(true)}>Edit members</Button>
                     <h1>Add amounts and recepients</h1>
                     <div style={mystyle}>
-                        <form onSubmit={(e) => handleAddPerson(e)}>
+                        <form onSubmit={(e) => handleAddRecords(e)}>
                             <TextField
                                 size="small"
                                 id="outlined-basic"
                                 label="Name of activity"
                                 variant="outlined"
-                                value={name}
-                                onChange={(e) => { setName(e.target.value) }} />
-                            <Select
-                                size="small"
-                                id="outlined-basic"
-                                label="Name of activity"
-                                variant="outlined"
-                                value={people}
-                                multiple>
-                                {people.map((person) => {
-                                    return <><MenuItem value={person}>{person}</MenuItem></>
-                                }
-                                )}
-                            </Select>
+                                value={nameOfActivity}
+                                onChange={(e) => { setNameOfActivity(e.target.value) }} />
+                            <FormControl sx={{ ml: 1, mr: 1, width: 300 }}>
+                                <Select
+                                    labelId="demo-multiple-name-label"
+                                    id="demo-multiple-name"
+                                    size="small"
+                                    multiple
+                                    variant="outlined"
+                                    value={peopleForAmount}
+                                    onChange={handleAddPeopleForAmount}
+                                    MenuProps={MenuProps}
+                                >
+                                    {people.map((person) => (
+                                        <MenuItem
+                                            key={person}
+                                            value={person}
+                                        >
+                                            {person}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                             <TextField
                                 size="small"
                                 id="outlined-basic"
-                                label="Name of activity"
+                                label="Cost of activity"
                                 variant="outlined"
-                                value={name}
-                                onChange={(e) => { setName(e.target.value) }} />
+                                value={amountOfActivity}
+                                onChange={(e) => { setAmountOfActivity(e.target.value) }} />
+                            <FormControl sx={{ ml: 1, mr: 1, width: 200 }}>
+                                <Select
+                                    labelId="demo-name-label"
+                                    id="demo-name"
+                                    size="small"
+                                    variant="outlined"
+                                    value={personPaid}
+                                    onChange={handleAddPersonPaid}
+                                >
+                                    {people.map((person) => (
+                                        <MenuItem
+                                            key={person}
+                                            value={person}
+                                        >
+                                            {person}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                             <Button
                                 sx={{ marginLeft: '10px' }}
                                 variant="contained"
-                                type='submit'>Add member</Button>
+                                type='submit'>Add record</Button>
                         </form>
                     </div>
                     <Container maxWidth="sm">
@@ -188,7 +267,15 @@ export default function DeptCalulator() {
                                             onClick={() => handleCancelEdit()}>Cancel edit</Button>
                                     </form> :
                                         <>
-                                            <ListItemText primary={amount.nameOfAmount} />
+                                            <ListItemText 
+                                            secondaryTypographyProps={{ style: {  whiteSpace: "pre-line" } }} 
+                                            primary={amount.nameOfAmount} 
+                                            secondary={
+                                                "Amount: " + amount.amount + '\n' +
+                                                "Recepients: " + amount.peopleRecepients + '\n' +
+                                                "Person paid: " + amount.personPaid
+                                            } 
+                                            />
                                             <Button
                                                 sx={{ marginLeft: '10px', backgroundColor: 'grey' }}
                                                 variant="contained"
@@ -205,6 +292,11 @@ export default function DeptCalulator() {
                             })}
                         </List>
                     </Container>
+                    <Button
+                    sx={{ marginLeft: '10px' }}
+                    variant="contained"
+                    type='button'
+                    onClick={() => setPersonState(false)}>Finish adding amounts</Button>
                 </>
             }
         </>
